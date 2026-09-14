@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+# benepass — CLI for the Benepass employee benefits platform.
+#
+# Self-bootstrapping: the only prerequisite is uv (https://docs.astral.sh/uv/).
+# The venv is built OUTSIDE this directory, because when this ships as a Claude
+# Code plugin the plugin directory is replaced on every update and must never be
+# written to.
+set -euo pipefail
+
+# Resolve this script's real directory, following symlinks, without needing a
+# python interpreter (uv may be the only thing installed).
+src="${BASH_SOURCE[0]}"
+while [ -L "$src" ]; do
+    dir="$(cd -P "$(dirname "$src")" && pwd)"
+    src="$(readlink "$src")"
+    case "$src" in /*) ;; *) src="$dir/$src" ;; esac
+done
+SCRIPT_DIR="$(cd -P "$(dirname "$src")" && pwd)"
+
+# uv's default install location; a bare systemd/cron PATH omits it.
+export PATH="$HOME/.local/bin:$PATH"
+
+if ! command -v uv >/dev/null 2>&1; then
+    echo "benepass: uv is required — install it with: curl -LsSf https://astral.sh/uv/install.sh | sh" >&2
+    exit 1
+fi
+
+BENEPASS_HOME="${BENEPASS_HOME:-$HOME/.cache/benepass-cli}"
+VENV="$BENEPASS_HOME/venv"
+STAMP_FILE="$BENEPASS_HOME/venv.stamp"
+
+# Fingerprint the sources, so an updated plugin reinstalls itself and a stale
+# venv can never shadow new code. The install is deliberately NON-editable: the
+# plugin directory moves on every update, and an editable install would point at
+# a path that no longer exists.
+#
+# sha256sum is GNU coreutils: macOS ships shasum and openssl instead, so
+# hard-coding it killed every invocation on a Mac at this line, naming a binary
+# no documentation mentions. Pick whichever hasher the host has.
+if command -v sha256sum >/dev/null 2>&1; then
+    _hash() { sha256sum | cut -d' ' -f1; }
+elif command -v shasum >/dev/null 2>&1; then
+    _hash() { shasum -a 256 | cut -d' ' -f1; }
+elif command -v openssl >/dev/null 2>&1; then
+    # openssl prints "SHA2-256(stdin)= <hex>", so take the last field.
+    _hash() { openssl dgst -sha256 | awk '{print $NF}'; }
+else
+    echo "benepass: needs one of sha256sum, shasum or openssl to fingerprint its sources" >&2
+    exit 1
+fi
+
+# Bash expands a glob in LC_COLLATE order, and these filenames sort differently
+# under C than under en_*.UTF-8 — same bytes, different concatenation, different
+# hash. That made the stamp depend on the caller's locale, so a terminal on
+# en_US and a cron job on C reinstalled the venv on every alternation. Pin the
+# collation in a SUBSHELL: exporting LC_ALL into the Python process below would
+# change its output encoding.
+STAMP="$( (LC_ALL=C; cat "$SCRIPT_DIR/pyproject.toml" "$SCRIPT_DIR"/src/benepass/*.py) | _hash)"
+if [ -z "$STAMP" ]; then
+    # An empty stamp would silently reinstall on every run instead of failing.
+    echo "benepass: could not fingerprint the CLI sources under $SCRIPT_DIR" >&2
+    exit 1
+fi
+
+if [ ! -x "$VENV/bin/python" ] || [ "$(cat "$STAMP_FILE" 2>/dev/null || true)" != "$STAMP" ]; then
+    echo "benepass: installing into $VENV ..." >&2
+    mkdir -p "$BENEPASS_HOME"
+    if [ ! -x "$VENV/bin/python" ]; then
+        # uv downloads a managed Python if the host has no suitable one.
+        #
+        # --allow-existing because concurrent first runs race here. An agent
+        # batching independent commands fires three at once, all three pass the
+        # test above, one wins and the others died on uv's "a virtual
+        # environment already exists" refusal — which reads as a broken install
+        # rather than a collision worth retrying. `uv pip install` below needs
+        # no such guard: uv locks the environment for an install.
+        uv venv -q --allow-existing --python 3.12 "$VENV" || {
+            echo "benepass: could not create the venv at $VENV" >&2
+            exit 1
+        }
+    fi
+    uv pip install -q --python "$VENV/bin/python" "$SCRIPT_DIR" || {
+        echo "benepass: install failed — try: rm -rf $BENEPASS_HOME && $0 --help" >&2
+        exit 1
+    }
+    printf '%s\n' "$STAMP" >"$STAMP_FILE"
+fi
+
+# -P (PYTHONSAFEPATH, 3.11+) keeps the CALLER's directory off sys.path. Without
+# it `-m` puts the caller's cwd at sys.path[0], so a `benepass/` directory or a
+# stray `httpx.py` where the user happens to be standing shadows the stamped
+# venv copy entirely — arbitrary code in a process that holds the session token
+# — and running from inside cli/src imported the package from the source tree,
+# writing __pycache__ into the plugin directory this wrapper must never touch.
+# PYTHONDONTWRITEBYTECODE is the belt to that brace: nothing to write, anywhere.
+export PYTHONSAFEPATH=1 PYTHONDONTWRITEBYTECODE=1
+exec "$VENV/bin/python" -P -m benepass.cli "$@"

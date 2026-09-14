@@ -1,0 +1,21 @@
+{
+  "name": "benepass-plugin",
+  "description": "A single-plugin marketplace publishing the Benepass plugin for Claude Code.",
+  "owner": {
+    "name": "Jake McInteer",
+    "url": "https://github.com/mcinteerj"
+  },
+  "plugins": [
+    {
+      "name": "benepass",
+      "source": "./",
+      "category": "productivity",
+      "tags": [
+        "benefits",
+        "expenses",
+        "reimbursement",
+        "finance"
+      ]
+    }
+  ]
+}

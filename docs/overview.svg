@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" width="1200" height="600" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" role="img" aria-labelledby="t d">
+  <title id="t">How the benepass plugin works</title>
+  <desc id="d">Your inbox supplies the login code and receipts; Claude Code with this plugin decides which benefit a purchase belongs to using your own policy file; the Benepass API supplies balances and expiry dates. Every claim is previewed and filed only when you say yes.</desc>
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#8A8378"/>
+    </marker>
+    <marker id="arrDark" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#2B2A28"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="600" rx="18" fill="#FBF7F0"/>
+
+  <!-- headline -->
+  <text x="48" y="52" font-size="26" font-weight="700" fill="#2B2A28">Perk money expires quietly. This finds it first, and files only when you say so.</text>
+
+  <!-- ===== Column 1: your inbox ===== -->
+  <rect x="48" y="86" width="300" height="230" rx="14" fill="#FFFFFF" stroke="#E5DDD0"/>
+  <text x="72" y="120" font-size="18" font-weight="700" fill="#2B2A28">Your inbox</text>
+  <text x="72" y="142" font-size="13" fill="#8A8378">whatever mail tool your session has</text>
+  <!-- envelope: login code -->
+  <rect x="72" y="164" width="252" height="54" rx="10" fill="#FBF7F0" stroke="#E5DDD0"/>
+  <path d="M84 176 h32 v22 h-32 z M84 176 l16 12 l16 -12" fill="none" stroke="#C6553B" stroke-width="1.6"/>
+  <text x="128" y="185" font-size="13" font-weight="600" fill="#2B2A28">6-digit login code</text>
+  <text x="128" y="204" font-size="12" fill="#8A8378">Benepass has no passwords</text>
+  <!-- envelope: receipts -->
+  <rect x="72" y="230" width="252" height="54" rx="10" fill="#FBF7F0" stroke="#E5DDD0"/>
+  <path d="M84 242 h32 v22 h-32 z M84 242 l16 12 l16 -12" fill="none" stroke="#2F7F7A" stroke-width="1.6"/>
+  <text x="128" y="251" font-size="13" font-weight="600" fill="#2B2A28">Receipts &amp; order emails</text>
+  <text x="128" y="270" font-size="12" fill="#8A8378">rendered as-is, never rebuilt</text>
+
+  <!-- arrow inbox -> claude -->
+  <line x1="352" y1="200" x2="428" y2="200" stroke="#8A8378" stroke-width="1.8" marker-end="url(#arr)"/>
+  <text x="390" y="190" font-size="11" fill="#8A8378" text-anchor="middle">Claude reads</text>
+
+  <!-- ===== Column 2: Claude Code + plugin ===== -->
+  <rect x="432" y="86" width="360" height="230" rx="14" fill="#FFFFFF" stroke="#E5DDD0"/>
+  <text x="456" y="120" font-size="18" font-weight="700" fill="#2B2A28">Claude Code + this plugin</text>
+  <text x="456" y="142" font-size="13" fill="#8A8378">the judgement: which pot, and whether at all</text>
+  <!-- skill chips -->
+  <g font-size="12" font-weight="600">
+    <rect x="456" y="158" width="150" height="26" rx="13" fill="#C6553B"/>
+    <text x="531" y="175" fill="#FFFFFF" text-anchor="middle">/benepass:setup</text>
+    <rect x="614" y="158" width="160" height="26" rx="13" fill="#2F7F7A"/>
+    <text x="694" y="175" fill="#FFFFFF" text-anchor="middle">/benepass:backfill</text>
+    <rect x="456" y="192" width="150" height="26" rx="13" fill="#2F7F7A"/>
+    <text x="531" y="209" fill="#FFFFFF" text-anchor="middle">/benepass:sweep</text>
+    <rect x="614" y="192" width="160" height="26" rx="13" fill="#FBF7F0" stroke="#D9A441"/>
+    <text x="694" y="209" fill="#2B2A28" text-anchor="middle">“can I claim this?”</text>
+  </g>
+  <!-- CLI + policy pills -->
+  <rect x="456" y="236" width="150" height="56" rx="10" fill="#FBF7F0" stroke="#E5DDD0"/>
+  <text x="531" y="258" font-size="13" font-weight="700" fill="#2B2A28" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">benepass</text>
+  <text x="531" y="277" font-size="11.5" fill="#8A8378" text-anchor="middle">the CLI · the hands</text>
+  <rect x="614" y="236" width="160" height="56" rx="10" fill="#FBF7F0" stroke="#E5DDD0"/>
+  <text x="694" y="258" font-size="13" font-weight="700" fill="#2B2A28" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">PREFERENCES.md</text>
+  <text x="694" y="277" font-size="11.5" fill="#8A8378" text-anchor="middle">your policy · setup writes it</text>
+
+  <!-- arrows claude <-> benepass -->
+  <line x1="796" y1="180" x2="872" y2="180" stroke="#8A8378" stroke-width="1.8" marker-end="url(#arr)"/>
+  <text x="834" y="170" font-size="11" fill="#8A8378" text-anchor="middle">unofficial API</text>
+  <line x1="872" y1="222" x2="796" y2="222" stroke="#8A8378" stroke-width="1.8" marker-end="url(#arr)"/>
+  <text x="834" y="240" font-size="11" fill="#8A8378" text-anchor="middle">balances · expiry</text>
+
+  <!-- ===== Column 3: Benepass ===== -->
+  <rect x="876" y="86" width="276" height="230" rx="14" fill="#FFFFFF" stroke="#E5DDD0"/>
+  <text x="900" y="120" font-size="18" font-weight="700" fill="#2B2A28">Benepass</text>
+  <text x="900" y="142" font-size="13" fill="#8A8378">per-category pots, each on its own clock</text>
+  <!-- pots -->
+  <g font-size="12">
+    <text x="900" y="172" font-weight="600" fill="#2B2A28">Commuting</text>
+    <text x="1128" y="172" fill="#C6553B" text-anchor="end" font-weight="600">dies monthly</text>
+    <rect x="900" y="178" width="228" height="10" rx="5" fill="#EFE8DC"/>
+    <rect x="900" y="178" width="200" height="10" rx="5" fill="#C6553B"/>
+
+    <text x="900" y="216" font-weight="600" fill="#2B2A28">Education</text>
+    <text x="1128" y="216" fill="#D9A441" text-anchor="end" font-weight="600">dies 31 Dec</text>
+    <rect x="900" y="222" width="228" height="10" rx="5" fill="#EFE8DC"/>
+    <rect x="900" y="222" width="216" height="10" rx="5" fill="#D9A441"/>
+
+    <text x="900" y="260" font-weight="600" fill="#2B2A28">Wellness</text>
+    <text x="1128" y="260" fill="#2F7F7A" text-anchor="end" font-weight="600">capped</text>
+    <rect x="900" y="266" width="228" height="10" rx="5" fill="#EFE8DC"/>
+    <rect x="900" y="266" width="96" height="10" rx="5" fill="#2F7F7A"/>
+    <text x="900" y="298" font-size="11.5" fill="#8A8378">Unclaimed money is forfeited, silently.</text>
+  </g>
+
+  <!-- ===== Bottom band: every claim, in order ===== -->
+  <text x="48" y="366" font-size="16" font-weight="700" fill="#2B2A28">Every claim, in this order</text>
+  <text x="272" y="366" font-size="13" fill="#8A8378">headless runs stop at step 4 and report — they never file</text>
+
+  <g font-size="12.5">
+    <!-- step 1 -->
+    <rect x="48" y="386" width="196" height="118" rx="12" fill="#FFFFFF" stroke="#E5DDD0"/>
+    <circle cx="72" cy="410" r="12" fill="#2B2A28"/><text x="72" y="414.5" fill="#FFFFFF" text-anchor="middle" font-weight="700">1</text>
+    <text x="92" y="414" font-weight="700" fill="#2B2A28">Find the receipt</text>
+    <text x="64" y="440" fill="#8A8378">sweep your mail by vendor,</text>
+    <text x="64" y="458" fill="#8A8378">then generic terms</text>
+    <line x1="248" y1="445" x2="270" y2="445" stroke="#2B2A28" stroke-width="1.8" marker-end="url(#arrDark)"/>
+
+    <!-- step 2 -->
+    <rect x="274" y="386" width="196" height="118" rx="12" fill="#FFFFFF" stroke="#E5DDD0"/>
+    <circle cx="298" cy="410" r="12" fill="#2B2A28"/><text x="298" y="414.5" fill="#FFFFFF" text-anchor="middle" font-weight="700">2</text>
+    <text x="318" y="414" font-weight="700" fill="#2B2A28">Not already paid?</text>
+    <text x="290" y="440" fill="#8A8378"><tspan font-family="ui-monospace, Menlo, monospace" fill="#2B2A28">benepass match</tspan> by amount</text>
+    <text x="290" y="458" fill="#8A8378">and date, not merchant name</text>
+    <line x1="474" y1="445" x2="496" y2="445" stroke="#2B2A28" stroke-width="1.8" marker-end="url(#arrDark)"/>
+
+    <!-- step 3 -->
+    <rect x="500" y="386" width="196" height="118" rx="12" fill="#FFFFFF" stroke="#E5DDD0"/>
+    <circle cx="524" cy="410" r="12" fill="#2B2A28"/><text x="524" y="414.5" fill="#FFFFFF" text-anchor="middle" font-weight="700">3</text>
+    <text x="544" y="414" font-weight="700" fill="#2B2A28">Which pot?</text>
+    <text x="516" y="440" fill="#8A8378">eligible categories, then your</text>
+    <text x="516" y="458" fill="#8A8378">priority order, narrowest first</text>
+    <line x1="700" y1="445" x2="722" y2="445" stroke="#2B2A28" stroke-width="1.8" marker-end="url(#arrDark)"/>
+
+    <!-- step 4 -->
+    <rect x="726" y="386" width="196" height="118" rx="12" fill="#FFFFFF" stroke="#E5DDD0"/>
+    <circle cx="750" cy="410" r="12" fill="#2B2A28"/><text x="750" y="414.5" fill="#FFFFFF" text-anchor="middle" font-weight="700">4</text>
+    <text x="770" y="414" font-weight="700" fill="#2B2A28">Preview to you</text>
+    <text x="742" y="440" fill="#8A8378">merchant · amount · currency</text>
+    <text x="742" y="458" fill="#8A8378">date · pot · the receipt itself</text>
+    <line x1="926" y1="445" x2="948" y2="445" stroke="#2B2A28" stroke-width="1.8" marker-end="url(#arrDark)"/>
+
+    <!-- step 5 -->
+    <rect x="952" y="386" width="200" height="118" rx="12" fill="#2B2A28"/>
+    <circle cx="976" cy="410" r="12" fill="#FFFFFF"/><text x="976" y="414.5" fill="#2B2A28" text-anchor="middle" font-weight="700">5</text>
+    <text x="996" y="414" font-weight="700" fill="#FFFFFF">You say yes</text>
+    <text x="968" y="440" fill="#D9D2C5">only then <tspan font-family="ui-monospace, Menlo, monospace" fill="#FFFFFF">--confirm</tspan></text>
+    <text x="968" y="458" fill="#D9D2C5">never on its own, never blanket</text>
+    <!-- lock -->
+    <rect x="1112" y="474" width="20" height="16" rx="3" fill="none" stroke="#D9A441" stroke-width="1.6"/>
+    <path d="M1116 474 v-5 a6 6 0 0 1 12 0 v5" fill="none" stroke="#D9A441" stroke-width="1.6"/>
+  </g>
+
+  <!-- footer -->
+  <text x="48" y="548" font-size="12" fill="#8A8378">Refresh token stays on your machine, never in a command. Unofficial client of an API Benepass does not publish; can break without notice.</text>
+  <text x="48" y="570" font-size="12" fill="#8A8378">Install: /plugin marketplace add mcinteerj/benepass-plugin · /plugin install benepass@benepass-plugin · then /benepass:setup</text>
+</svg>

@@ -1,0 +1,70 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "benepass-cli"
+version = "0.1.0"
+description = "CLI for the Benepass employee benefits platform — balances, transactions, eligibility, and reimbursement submission"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+keywords = ["benepass", "benefits", "reimbursement", "expenses", "cli"]
+dependencies = [
+    # 0.12 is the floor because older typer defaults
+    # pretty_exceptions_show_locals=True, which prints frame locals — including
+    # the refresh token — on an unhandled exception.
+    "typer>=0.12",
+    "httpx>=0.25.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/mcinteerj/benepass-plugin"
+Repository = "https://github.com/mcinteerj/benepass-plugin"
+
+[project.scripts]
+benepass = "benepass.cli:app"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.11",
+    "pytest>=8.0",
+    "ruff>=0.6",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/benepass"]
+
+[tool.ruff]
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "SLF"]
+ignore = [
+    "E501",   # line length is ruff-format's business
+    "B008",   # typer declares defaults by calling typer.Option()
+    "UP035",  # typing.Callable is fine on the supported versions
+    "UP006",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["SLF"]
+
+[tool.mypy]
+python_version = "3.11"
+files = ["src", "tests"]
+strict = true
+# The API returns free-form JSON, so Any flows out of every client call by
+# design; the rest of strict mode still applies.
+warn_return_any = false
+disallow_any_generics = false
+
+[[tool.mypy.overrides]]
+module = "typer.*"
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q"

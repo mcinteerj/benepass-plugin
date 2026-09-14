@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "benepass",
+  "displayName": "Benepass",
+  "version": "0.2.1",
+  "description": "Check Benepass balances and expiring perk money, decide which benefit category a purchase belongs to, and file a reimbursement claim from a receipt. A bundled CLI plus four skills: the rules themselves, guided setup, a historic backfill, and a repeatable sweep of your mail for claimable receipts.",
+  "author": {
+    "name": "Jake McInteer",
+    "url": "https://github.com/mcinteerj"
+  },
+  "homepage": "https://github.com/mcinteerj/benepass-plugin",
+  "repository": "https://github.com/mcinteerj/benepass-plugin",
+  "license": "MIT",
+  "keywords": [
+    "benepass",
+    "employee-benefits",
+    "reimbursement",
+    "expenses",
+    "receipts",
+    "perks",
+    "hr",
+    "cli"
+  ]
+}

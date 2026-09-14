@@ -1,0 +1,26 @@
+# Python build + tooling artifacts
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.egg-info/
+# Nothing here is built from a lockfile: the wrapper installs into a venv under
+# $BENEPASS_HOME. A `uv run` without --no-project drops one here anyway, and
+# scripts/install-test.sh fails on it — ignored so a slip cannot commit it too.
+uv.lock
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Editor / OS noise
+.DS_Store
+.idea/
+.vscode/
+
+# Nothing per-user belongs here: the session, cache, categories snapshot and
+# preferences all live in ~/.config/benepass/, and the CLI's virtualenv in
+# ~/.cache/benepass-cli/ (BENEPASS_HOME).
